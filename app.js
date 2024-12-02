@@ -3,8 +3,6 @@ const app = express();
 const port = 3000;
 const users = [];
 let current_user = -1
-let author = ''
-const cycles = []
 const image_begin = " ";
 
 app.get('/', (req, res) => {
@@ -28,17 +26,23 @@ app.post('/api/login',(req,res)=>{
         if (users[i].username === username && users[i].password === password) {
             current_user = i;
             author = users[current_user].username;
-            res.render('homepage');
+            res.status(200).send({
+                "userId": current_user
+                });
         }
     }
-    res.status(401).send('"Invalid email or password');
-})
+    res.status(401).send({
+        "error": "Invalid email or password"
+        });
+});
 
-app.post('/register', (req, res) => {
+app.post('/api/register', (req, res) => {
     const { username, password } = req.body;
     // 检查用户是否已经存在
     if (users.some(user => user.username === username)) {
-        res.status(400).send('Username already exists');
+        res.status(400).send({
+            "error": "Username already exists"
+            });
     } else {
         const comments = []
         const user = {
@@ -48,5 +52,23 @@ app.post('/register', (req, res) => {
             "image": image_begin,
         }
         users.push(user);
+        res.status(201).send({
+            "message": "User registered successfully"
+            })
+    }
+});
+
+app.post('/api/user/profile/picture', (req, res) => {
+    const { image } = req.body;
+    // 检查用户是否已经存在
+    if((typeof image)==="string"){
+        users[current_user].image = image;
+        res.status(200).send({
+            "message": "Profile picture updated successfully"
+            });
+    }else{
+        res.status(400).send({
+            "error": "Invalid image format"
+            })
     }
 });
