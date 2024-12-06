@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const users = [];
+const posts = [];
+let hot = -1;
 let current_user = -1
 const image_begin = " ";
 
@@ -71,4 +73,55 @@ app.post('/api/user/profile/picture', (req, res) => {
             "error": "Invalid image format"
             })
     }
+});
+
+app.get('/api/posts/latest', (req, res) => {
+    res.status(200).send(posts);
+});
+
+app.get('/api/posts/popular', (req, res) => {
+    res.status(200).send(posts[hot]);
+});
+
+app.get('/api/posts/search', (req, res) => {
+    const{query}=req.body;
+    var result = [];
+    for(let i = 0;i<posts.length;i++){
+        if(posts[i].title.indexOf(query)>=0){
+            result.push({
+                "postId":i,
+                "title":posts[i].title
+            })
+        }
+    }
+    res.status(200).send(result);
+});
+
+app.post('/api/posts', (req, res) => {
+    const data = req.body;
+    if(!data){
+        res.status(400).send({
+            "error": "Title is required"
+            })
+    }
+    const new_post = {
+        "postId": posts.length,
+        "title": data.title,
+        "author": data.author,
+        "content": data.content,
+        "createdAt": data.createdAt,
+        "images": data.images,
+        "averageRating": 0,
+        "comments": []
+    }
+    posts.push(new_post);
+    res.status(201).send({
+        "message": "Post created successfully",
+        "postId": new_post.postId
+        })
+});
+
+app.get('/api/posts/{postId}', (req, res) => {
+    const Id = req.params.postId;
+    res.send(posts[Id]);
 });
