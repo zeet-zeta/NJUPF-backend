@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const authRoutes = require('./routes/auth_routes');
 const postsRoutes = require('./routes/posts_routes');
 
@@ -7,6 +8,15 @@ const app = express();
 const PORT = 3000;
 
 app.use(bodyParser.json());
+
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+
 
 app.use('/api', authRoutes);
 app.use('/api', authRoutes);
