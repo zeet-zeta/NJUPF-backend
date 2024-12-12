@@ -1,32 +1,59 @@
-const db = require('../config/db');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const express = require('express');
+const {Op}  = require('sequelize');
+const  { Userdata } = require('../models');
 
-const JWT_SECRET = 'your_jwt_secret'; // 建议用环境变量替代
+const registerUser = async (username, password,res) => {
+    try{
+        const body = {
+            username: username,
+            password: password,
+        }
 
-const registerUser = async (username, password) => {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    return new Promise((resolve, reject) => {
-        db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], (err, results) => {
-            if (err) return reject(err);
-            resolve(results.insertId);
-        });
-    });
+        const userdata = await Userdata.create(body);
+        res.status(201).json({
+            status: true,
+            message:'账号创建成功',
+            data: userdata
+        })
+    }
+
+    catch (error) {
+        res.status(500).json({
+            status: false,
+            message:'账号创建失败',
+            data:[error.message]
+        })
+    }
 };
 
-const loginUser = async (username, password) => {
-    return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
-            if (err || results.length === 0) return reject('Invalid username or password');
-            
-            const user = results[0];
-            const match = await bcrypt.compare(password, user.password);
-            if (!match) return reject('Invalid username or password');
-            
-            const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-            resolve({ token, userId: user.id });
+const loginUser = async (username, password,res) => {
+    const body = {
+        username:username,
+        password:password,
+    }
+    try {
+        // 查询数据库
+        const userdata = await Userdata.findOne({
+            where: {
+                username: username,
+                password: password
+            }
         });
-    });
+        if (userdata) {
+            // 找到匹配的用户
+            res.json({status: true, message: 'User found', data: userdata});
+        } else {
+            // 没有找到匹配的用户
+            res.json({status: false, message: 'User not found', data: []});
+        }
+
+    }catch (error) {
+        res.status(500).json({
+            status: false,
+            data:[error.message]
+        })
+    }
 };
+
 
 module.exports = { registerUser, loginUser };

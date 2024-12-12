@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "root",
+    "password": "NJUpf4&59",
+    "database": "NJUpf",
+    "host": "121.41.102.207",
+    "dialect": "mysql",
+    "timezone": "+08:00"
+  },
+  "test": {
+    "username": "root",
+    "password": "NJUpf4&59",
+    "database": "NJUpf",
+    "host": "121.41.102.207",
+    "dialect": "mysql",
+    "timezone": "+08:00"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "web_api_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "timezone": "+08:00"
+  }
+}

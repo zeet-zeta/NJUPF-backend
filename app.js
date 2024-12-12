@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const indexRouter = require('./routes/index');
 const authRoutes = require('./routes/auth_routes');
 const postsRoutes = require('./routes/posts_routes');
 
@@ -21,6 +22,7 @@ app.use(cors(corsOptions));
 app.use('/api', authRoutes);
 app.use('/api', authRoutes);
 app.use('/api/posts', postsRoutes);
+app.use('/api/index', indexRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
