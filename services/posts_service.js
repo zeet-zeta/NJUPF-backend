@@ -2,8 +2,8 @@ const express = require('express');
 const {Op}  = require('sequelize');
 const  { Post } = require('../models');
 
-const createPost = async (postData,res) => {
-    try{
+const createPost = async (postData) => {
+
        const body = {
            title: postData.title,
            author: postData.author,
@@ -12,75 +12,60 @@ const createPost = async (postData,res) => {
            count_views: 0
        }
 
-        const post = await Post.create(body);
-
-        res.status(201).json({
-            status: true,
-            message:'帖子发布成功',
-            data: post
-        })
-    }
-
-    catch (error) {
-        res.status(500).json({
-            status: false,
-            message:'帖子发布失败',
-            data:[error.message]
-        })
-    }
+        await Post.create(body);
 };
 
-const getLatestPosts = async (req,res) => {
-    try {
+const getLatestPosts = async (req) => {
         const query = req.query;
 
         const condition = {
             order:[['id','DESC']],
 
         };
-
-        const {post} = await Post.findAndCountAll(condition);
-
-        res.json({
-            status: true,
-            message: "帖子查询成功",
-            data: post,
-        })
-
-    } catch (error) {
-        res.status(500).json({
-            status: false,
-            message: "帖子查询失败",
-            error: [error.message]
-        });
-    }
+        return await Post.findAndCountAll(condition);
 };
 
 
-const getHottestPosts = async (req,res) => {
-    try {
-        const post = await Post.findOne({
+const getHottestPosts = async () => {
+        return await Post.findOne({
             order: [
                 ['count_views', 'DESC']
             ]
         });
-
-        if (post) {
-            res.json({
-                data:post
-            });
-        }
-        else {
-            res.status(404).json({
-                message: '没有找到帖子。' });
-        }
-    }
-    catch (error) {
-        res.status(500).json({
-            message: '查询时发生错误',
-            error: error.message });
-    }
-
 }
 
-module.exports = { createPost, getLatestPosts };
+const FuzzySearch = async (req) => {
+
+        const query = req.query;
+
+        const currentPage = Math.abs(Number(query.currentPage)) || 1;
+        const pageSize = Math.abs(Number(query.pageSize)) || 10;
+
+        const offset = (currentPage - 1) * pageSize;
+
+        const condition = {
+            order:[['id','ASC']],
+            limit:pageSize,
+            offset:offset
+        };
+
+        if (query.title){
+            condition.where = {
+                title:{
+                    [Op.like]: `%${query.title}%`
+                }
+            }
+        }
+        return {count, rows} = await Post.findAndCountAll(condition);
+
+};
+
+const ReviewPost = async (id) => {
+    return await Post.findByPk(id);
+};
+
+
+
+
+
+module.exports = { createPost, getLatestPosts, getHottestPosts, FuzzySearch, ReviewPost };
