@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 3000;
 const users = [];
@@ -6,6 +7,15 @@ const posts = [];
 let hot = -1;
 let current_user = -1
 const image_begin = " ";
+
+
+app.use(express.json());
+app.use(cors({
+    origin: 'http://localhost:5173', // 允许来自特定域名的请求
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // 允许的HTTP方法
+    allowedHeaders: ['Content-Type', 'Authorization'], // 允许的请求头
+    credentials: true // 允许发送Cookie等凭证信息
+}));
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -46,9 +56,7 @@ app.post('/api/register', (req, res) => {
             "error": "Username already exists"
             });
     } else {
-        const comments = []
         const user = {
-            "comments":comments,
             "username": username,
             "password": password,
             "image": image_begin,
