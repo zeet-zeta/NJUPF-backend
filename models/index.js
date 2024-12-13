@@ -8,6 +8,8 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
+const post = require('./post');
+const views = require('./views');
 
 let sequelize;
 if (config.use_env_variable) {
@@ -39,5 +41,7 @@ Object.keys(db).forEach(modelName => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+sequelize.sync();
 
 module.exports = db;

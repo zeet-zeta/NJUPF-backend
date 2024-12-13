@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      post.hasMany(models.views, { foreignKey: 'postId', as: 'comments' });
       // define association here
     }
   }
@@ -18,8 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     author: DataTypes.STRING,
     content: DataTypes.STRING,
     image: DataTypes.STRING,
-    views: DataTypes.STRING,
-    count_views: DataTypes.INTEGER
+    count: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'post',

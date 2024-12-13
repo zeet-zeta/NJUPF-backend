@@ -21,10 +21,7 @@ module.exports = {
       image: {
         type: Sequelize.STRING
       },
-      views: {
-        type: Sequelize.STRING
-      },
-      count_views: {
+      count: {
         type: Sequelize.INTEGER
       },
       createdAt: {

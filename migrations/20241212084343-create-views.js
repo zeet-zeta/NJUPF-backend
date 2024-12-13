@@ -18,6 +18,9 @@ module.exports = {
       point: {
         type: Sequelize.INTEGER
       },
+      postId: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -11,12 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      views.belongsTo(models.post, { foreignKey: 'postId', as: 'post' });
     }
   }
   views.init({
     author: DataTypes.STRING,
     content: DataTypes.STRING,
-    point: DataTypes.INTEGER
+    point: DataTypes.INTEGER,
+    postId:DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'views',
