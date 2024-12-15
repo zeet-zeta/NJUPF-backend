@@ -1,4 +1,5 @@
 const express = require('express');
+
 const cors = require('cors');
 const app = express();
 const port = 3000;
@@ -32,21 +33,8 @@ app.get('/about', (req, res) => {
 app.use(express.static('public'));
 //静态文件目录，访问http://localhost:3000/your-file-name即可访问public目录下的文件
 
-app.post('/api/login',(req,res)=>{
-    const { username, password } = req.body;
-    for (let i = 0; i < users.length; i++) {
-        if (users[i].username === username && users[i].password === password) {
-            current_user = i;
-            author = users[current_user].username;
-            res.status(200).send({
-                "userId": current_user
-                });
-        }
-    }
-    res.status(401).send({
-        "error": "Invalid email or password"
-        });
-});
+
+app.use(bodyParser.json());
 
 app.post('/api/register', (req, res) => {
     const { username, password } = req.body;
@@ -68,68 +56,21 @@ app.post('/api/register', (req, res) => {
     }
 });
 
-app.post('/api/user/profile/picture', (req, res) => {
-    const { image } = req.body;
-    // 检查用户是否已经存在
-    if((typeof image)==="string"){
-        users[current_user].image = image;
-        res.status(200).send({
-            "message": "Profile picture updated successfully"
-            });
-    }else{
-        res.status(400).send({
-            "error": "Invalid image format"
-            })
-    }
+
+app.use(cors(corsOptions));
+
+
+app.use('/api', authRoutes);
+app.use('/api', authRoutes);
+app.use('/api/posts', postsRoutes);
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
-app.get('/api/posts/latest', (req, res) => {
-    res.status(200).send(posts);
+app.get('/', (req, res) => {
+    res.send('This is our backend server');
 });
 
-app.get('/api/posts/popular', (req, res) => {
-    res.status(200).send(posts[hot]);
-});
-
-app.get('/api/posts/search', (req, res) => {
-    const{query}=req.body;
-    var result = [];
-    for(let i = 0;i<posts.length;i++){
-        if(posts[i].title.indexOf(query)>=0){
-            result.push({
-                "postId":i,
-                "title":posts[i].title
-            })
-        }
-    }
-    res.status(200).send(result);
-});
-
-app.post('/api/posts', (req, res) => {
-    const data = req.body;
-    if(!data){
-        res.status(400).send({
-            "error": "Title is required"
-            })
-    }
-    const new_post = {
-        "postId": posts.length,
-        "title": data.title,
-        "author": data.author,
-        "content": data.content,
-        "createdAt": data.createdAt,
-        "images": data.images,
-        "averageRating": 0,
-        "comments": []
-    }
-    posts.push(new_post);
-    res.status(201).send({
-        "message": "Post created successfully",
-        "postId": new_post.postId
-        })
-});
-
-app.get('/api/posts/{postId}', (req, res) => {
-    const Id = req.params.postId;
-    res.send(posts[Id]);
-});
+app.use(express.static('public'));
+//静态文件目录，访问http://localhost:3000/your-file-name 即可访问public目录下的文件
