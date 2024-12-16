@@ -1,2 +1,7 @@
 USE my_database;
-INSERT INTO user_avatars (userID, avatar) VALUES (2, "default.png");
+CREATE TABLE images (
+    imageID INT AUTO_INCREMENT PRIMARY KEY, 
+    image VARCHAR(255) NOT NULL, 
+    postID INT NOT NULL,
+    FOREIGN KEY (postID) REFERENCES posts(postID)
+);

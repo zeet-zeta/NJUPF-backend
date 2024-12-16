@@ -1,5 +1,4 @@
 const authService = require('../services/auth_service');
-const fileService = require('../services/file_service');
 
 const register = async (req, res) => {
     const { username, password } = req.body;
@@ -24,9 +23,8 @@ const login = async (req, res) => {
 const uploadAvatar = async (req, res) => {
     const userID = req.body.userID;
     try {
-        const fileInfo = fileService.uploadFile(req.file);
-        await authService.updateAvatar(userID, fileInfo.filename);
-        res.status(201).json({ avatar: fileInfo.filename });
+        await authService.updateAvatar(userID, req.file.filename);
+        res.status(201).json({ avatar: req.file.filename });
     } catch (error) {
         res.status(400).json({ error: "Invalid userID" });
     }

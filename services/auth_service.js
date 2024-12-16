@@ -1,6 +1,17 @@
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
+const deleteByFilename = async (filename) => {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(__dirname, '..', 'public', filename);
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error('文件删除失败:', err);
+        }
+    });
+}
+
 const registerUser = async (username, password) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     return new Promise((resolve, reject) => {
@@ -30,7 +41,7 @@ const updateAvatar = async (userID, avatar) => {
     return new Promise((resolve, reject) => {
         db.query('UPDATE user_avatars SET avatar = ? WHERE userID = ?', [avatar, userID], (err, results) => {
             if (err || results.affectedRows === 0) {
-                console.log('No user found');
+                deleteByFilename(avatar);
                 return reject();
             }
             resolve();

@@ -20,7 +20,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use('/api', authRoutes);
-app.use('/api/posts', postsRoutes);
+app.use('/api', postsRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
