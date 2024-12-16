@@ -1,9 +1,25 @@
 const db = require('../config/db');
 
+const deleteByFilename = async (filename) => {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(__dirname, '..', 'public', filename);
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error('文件删除失败:', err);
+        }
+    });
+}
+
 const createPost = (userID, title, content, filenames) => {
     return new Promise((resolve, reject) => {
         db.query('INSERT INTO posts (userID, title, content) VALUES (?, ?, ?) ', [userID, title, content], (err, results) => {
-            if (err) return reject(err);
+            if (err) {
+                for (let i = 0; i < filenames.length; i++) {
+                    deleteByFilename(filenames[i]);
+                }
+                return reject(err);
+            }
             const postID = results.insertId;
             for (let i = 0; i < filenames.length; i++) {
                 db.query('INSERT INTO images (postID, image) VALUES (?, ?)', [postID, filenames[i]]);
@@ -91,7 +107,7 @@ const getPopularPosts = () => {
 
 const searchPosts = (keyword) => {
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM posts WHERE title LIKE ? ', ['%' + keyword + '%'], async (err, results) => {
+        db.query('SELECT * FROM posts WHERE title LIKE ?', ['%' + keyword + '%'], async (err, results) => {
             if (err) return reject(err);
             const posts = [];
             for (let i = 0; i < results.length; i++) {
@@ -116,6 +132,7 @@ const getImages = (postID) => {
     return new Promise((resolve, reject) => {
         db.query('SELECT image FROM images WHERE postID = ?', postID, (err, results) => {
             if (err) return reject(err);
+            if (results.length === 0) return resolve(null);
             const images = [];
             for (let i = 0; i < results.length; i++) {
                 images.push(results[i].image);
@@ -129,12 +146,14 @@ const getComments = (postID) => {
     return new Promise((resolve, reject) => {
         db.query('SELECT * FROM comments WHERE postID = ?', postID, async (err, results) => {
             if (err) return reject(err);
+            if (results.length === 0) return resolve(null);
             const comments = [];
             for (let i = 0; i < results.length; i++) {
                 const comment_i = results[i];
+                console.log(comment_i);
                 comments.push({
-                    senderName: await getAuthorName(comment_i.userID),
-                    senderAvatar: await getAuthorAvatar(comment_i.userID),
+                    senderName: await getAuthorName(comment_i.senderID),
+                    senderAvatar: await getAuthorAvatar(comment_i.senderID),
                     comment: comment_i.comment,
                     rating: comment_i.rating,
                     createdTime: comment_i.createdTime
