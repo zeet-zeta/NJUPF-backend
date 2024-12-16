@@ -38,7 +38,6 @@ const searchPosts= async (req, res) => {
 const getDetail =  async (req, res) => {
     const postId = req.quert;
     //TODO
-    
     res.status(200).json();
 };
 
