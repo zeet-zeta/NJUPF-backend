@@ -19,7 +19,7 @@ app.use(cors(corsOptions));
 
 
 app.use('/api', authRoutes);
-app.use('/api', authRoutes);
+// app.use('/api', authRoutes);
 app.use('/api/posts', postsRoutes);
 
 app.listen(PORT, () => {
