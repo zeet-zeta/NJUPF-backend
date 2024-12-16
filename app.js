@@ -5,9 +5,11 @@ const authRoutes = require('./routes/auth_routes');
 const postsRoutes = require('./routes/posts_routes');
 
 const app = express();
+
 const PORT = 3000;
 
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
     origin: 'http://localhost:5173',
@@ -17,8 +19,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-
-app.use('/api', authRoutes);
 app.use('/api', authRoutes);
 app.use('/api/posts', postsRoutes);
 
