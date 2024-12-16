@@ -1,5 +1,5 @@
 const express = require('express');
-const { createPost } = require('../controllers/posts_controller');
+const { createPost, getLatestPosts, getPopularPosts, searchPosts, getPostDetails, createComment } = require('../controllers/posts_controller');
 const router = express.Router();
 
 const multer = require('multer');
@@ -17,5 +17,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post('/posts', upload.array('images', 9), createPost);
+router.get('/posts/latest', getLatestPosts);
+router.get('/posts/popular', getPopularPosts);
+router.get('/posts/search', searchPosts);
+router.get('/posts/detail', getPostDetails);
+router.post('/comments', createComment);
 
 module.exports = router;
