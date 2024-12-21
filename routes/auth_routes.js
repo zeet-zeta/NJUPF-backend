@@ -18,7 +18,16 @@ const upload = multer({ storage });
 
 router.post('/register', register);
 router.post('/login', login);
-router.post('/avatar/upload', upload.single('image'), uploadAvatar);
+// router.post('/avatar/upload', upload.single('image'), uploadAvatar);
+router.post('/avatar/upload', (req, res, next) => {
+    upload.single('image')(req, res, (err) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+        } else {
+            uploadAvatar(req, res);
+        }
+    });
+});
 router.get('/avatar/fetch', getAvatar);
 
 module.exports = router;

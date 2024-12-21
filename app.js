@@ -6,7 +6,7 @@ const postsRoutes = require('./routes/posts_routes');
 
 const app = express();
 
-const PORT = 3000;
+const PORT = 11451;
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));

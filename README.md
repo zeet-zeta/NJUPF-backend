@@ -1,1 +1,3 @@
-我简直受够了组员的愚蠢与无能，我决定自己写后端
+> node app.js
+or
+> pm2 start app.js

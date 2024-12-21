@@ -150,7 +150,6 @@ const getComments = (postID) => {
             const comments = [];
             for (let i = 0; i < results.length; i++) {
                 const comment_i = results[i];
-                console.log(comment_i);
                 comments.push({
                     senderName: await getAuthorName(comment_i.senderID),
                     senderAvatar: await getAuthorAvatar(comment_i.senderID),
